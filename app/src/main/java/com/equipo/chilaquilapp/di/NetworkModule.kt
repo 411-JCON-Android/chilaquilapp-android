@@ -15,8 +15,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    // TODO: sustituir por la URL real cuando la API quede desplegada en Vercel.
-    private const val BASE_URL = "https://chilaquilapp-api.vercel.app/api/"
+
+    private const val BASE_URL = "https://chilaquil-api.vercel.app/api/"
 
     @Provides
     @Singleton
