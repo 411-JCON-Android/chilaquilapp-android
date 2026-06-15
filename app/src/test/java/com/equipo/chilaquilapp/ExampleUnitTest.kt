@@ -1,4 +1,4 @@
-package com.example.chilaquilapp
+package com.equipo.chilaquilapp
 
 import org.junit.Test
 
