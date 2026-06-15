@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -28,6 +30,10 @@ import com.equipo.chilaquilapp.ui.theme.ChilaquilAppTheme
  * Botón principal en forma de píldora (CTA), como "Entrar" o "Crear cuenta"
  * en los mockups: fondo spiced-orange, texto en negritas y un ícono final
  * opcional.
+ *
+ * Cuando [loading] es `true` el botón muestra un indicador de progreso en lugar
+ * del texto y se deshabilita solo, para reflejar acciones en curso (ej. el
+ * registro mientras se hace la petición de red).
  */
 @Composable
 fun PillButton(
@@ -35,6 +41,7 @@ fun PillButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    loading: Boolean = false,
     icon: ImageVector? = Icons.AutoMirrored.Filled.ArrowForward
 ) {
     Button(
@@ -42,17 +49,25 @@ fun PillButton(
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp),
-        enabled = enabled,
+        enabled = enabled && !loading,
         shape = RoundedCornerShape(percent = 50),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.secondary,
             contentColor = MaterialTheme.colorScheme.onSecondary
         )
     ) {
-        Text(text = text, style = MaterialTheme.typography.titleMedium)
-        if (icon != null) {
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(imageVector = icon, contentDescription = null)
+        if (loading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(24.dp),
+                color = MaterialTheme.colorScheme.onSecondary,
+                strokeWidth = 2.dp
+            )
+        } else {
+            Text(text = text, style = MaterialTheme.typography.titleMedium)
+            if (icon != null) {
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(imageVector = icon, contentDescription = null)
+            }
         }
     }
 }

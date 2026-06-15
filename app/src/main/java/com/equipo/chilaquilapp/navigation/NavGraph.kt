@@ -36,7 +36,7 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
         composable(Routes.Registro.route) {
             RegistroScreen(
                 onRegistroExitoso = { navController.popBackStack() },
-                onVolver = { navController.popBackStack() }
+                onVolverClick = { navController.popBackStack() }
             )
         }
         composable(Routes.Menu.route) {
