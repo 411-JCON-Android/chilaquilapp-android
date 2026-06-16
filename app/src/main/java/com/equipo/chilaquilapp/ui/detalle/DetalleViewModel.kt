@@ -3,13 +3,11 @@ package com.equipo.chilaquilapp.ui.detalle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.equipo.chilaquilapp.data.UserSession
-import com.equipo.chilaquilapp.data.repository.PedidoRepository
 import com.equipo.chilaquilapp.data.repository.ProductoRepository
 import com.equipo.chilaquilapp.data.repository.Resultado
-import com.equipo.chilaquilapp.domain.model.Extra
+import com.equipo.chilaquilapp.data.session.BorradorPedido
+import com.equipo.chilaquilapp.data.session.PedidoEnProgreso
 import com.equipo.chilaquilapp.domain.model.ProductoDetalle
-import com.equipo.chilaquilapp.domain.model.Proteina
 import com.equipo.chilaquilapp.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,16 +23,14 @@ data class DetalleUiState(
     val extrasSeleccionados: Set<Int> = emptySet(),
     val cantidad: Int = 1,
     val cargando: Boolean = true,
-    val error: String? = null,
-    val pedidoEnviado: Boolean = false
+    val error: String? = null
 )
 
 @HiltViewModel
 class DetalleViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val productoRepo: ProductoRepository,
-    private val pedidoRepo: PedidoRepository,
-    private val userSession: UserSession
+    private val pedidoEnProgreso: PedidoEnProgreso
 ) : ViewModel() {
 
     private val productoId: Int =
@@ -105,36 +101,28 @@ class DetalleViewModel @Inject constructor(
         return precioBase * state.cantidad
     }
 
-    /** Crea el pedido a través de la API. */
-    fun crearPedido(onExito: () -> Unit) {
+    /**
+     * Arma el [BorradorPedido] con lo que el cliente seleccionó y lo deja en
+     * [PedidoEnProgreso] para que la pantalla de confirmar lo muestre y lo envíe.
+     * El pedido **no** se manda a la API aquí: eso ocurre en Confirmar, donde el
+     * usuario revisa el resumen y la dirección (sección 2, pantallas 4→5 del plan).
+     */
+    fun irAConfirmar(onExito: () -> Unit) {
         val state = _uiState.value
-        val usuario = userSession.usuario
-        val producto = state.producto
+        val producto = state.producto ?: return
 
-        if (usuario == null || producto == null) return
+        val proteinas = producto.proteinas.filter { it.id in state.proteinasSeleccionadas }
+        val extras = producto.extras.filter { it.id in state.extrasSeleccionados }
 
-        viewModelScope.launch {
-            _uiState.update { it.copy(cargando = true) }
-            val resultado = pedidoRepo.crearPedido(
-                usuarioId = usuario.id,
-                productoId = producto.id,
+        pedidoEnProgreso.establecer(
+            BorradorPedido(
+                producto = producto,
                 cantidad = state.cantidad,
-                proteinaIds = state.proteinasSeleccionadas.toList(),
-                extraIds = state.extrasSeleccionados.toList(),
-                direccionEntrega = usuario.direccion
+                proteinas = proteinas,
+                extras = extras
             )
-            when (resultado) {
-                is Resultado.Exito -> {
-                    _uiState.update { it.copy(cargando = false, pedidoEnviado = true) }
-                    onExito()
-                }
-                is Resultado.Error -> {
-                    _uiState.update {
-                        it.copy(cargando = false, error = resultado.mensaje)
-                    }
-                }
-            }
-        }
+        )
+        onExito()
     }
 
     fun reintentar() {

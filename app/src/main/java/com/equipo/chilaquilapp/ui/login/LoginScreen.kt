@@ -1,5 +1,6 @@
 package com.equipo.chilaquilapp.ui.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -31,12 +34,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.equipo.chilaquilapp.R
 import com.equipo.chilaquilapp.ui.components.ChilaquilTextField
 import com.equipo.chilaquilapp.ui.components.PillButton
-import com.equipo.chilaquilapp.ui.theme.BrownDark
 import com.equipo.chilaquilapp.ui.theme.BrownDarkest
 import com.equipo.chilaquilapp.ui.theme.ChilaquilAppTheme
-import com.equipo.chilaquilapp.ui.theme.OliveDarkest
 
 @Composable
 fun LoginScreen(
@@ -71,16 +73,25 @@ private fun LoginContent(
     onEntrarClick: () -> Unit,
     onIrARegistro: () -> Unit
 ) {
-    // Fondo cálido que evoca la foto de chilaquiles del mockup. Si más adelante
-    // se agrega un recurso de imagen para el hero, puede sustituir este degradado.
-    val fondo = Brush.verticalGradient(listOf(BrownDark, BrownDarkest, OliveDarkest))
+    val scrim = Brush.verticalGradient(
+        listOf(BrownDarkest.copy(alpha = 0.55f), BrownDarkest.copy(alpha = 0.88f))
+    )
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(fondo),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        Image(
+            painter = painterResource(R.drawable.chilaquiles_login),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(scrim)
+        )
         Column(
             modifier = Modifier
                 .safeDrawingPadding()
