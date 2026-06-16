@@ -54,7 +54,9 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             val productoId = backStackEntry.arguments?.getString(Routes.Detalle.ARG_PRODUCTO_ID).orEmpty()
             DetalleScreen(
                 productoId = productoId,
-                onConfirmar = { navController.navigate(Routes.Confirmar.route) },
+                onConfirmar = {
+                    navController.navigate(Routes.Confirmar.route)
+                },
                 onVolver = { navController.popBackStack() }
             )
         }
@@ -97,7 +99,12 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             val pedidoId = backStackEntry.arguments?.getString(Routes.DetallePedido.ARG_PEDIDO_ID).orEmpty()
             DetallePedidoScreen(
                 pedidoId = pedidoId,
-                onVolver = { navController.popBackStack() }
+                onVolver = { navController.popBackStack() },
+                onPedirDeNuevo = { productoId ->
+                    navController.navigate(Routes.Detalle.createRoute(productoId)) {
+                        // No hacer popUpTo para permitir volver atrás
+                    }
+                }
             )
         }
     }
