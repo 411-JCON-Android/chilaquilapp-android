@@ -103,7 +103,7 @@ fun DetalleScreen(
             if (state.producto != null && !state.cargando) {
                 BottomPedirBar(
                     total = viewModel.calcularTotal(),
-                    onClick = { viewModel.crearPedido(onExito = onConfirmar) },
+                    onClick = { viewModel.irAConfirmar(onExito = onConfirmar) },
                     enabled = !state.cargando
                 )
             }
